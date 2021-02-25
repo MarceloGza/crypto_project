@@ -14,7 +14,8 @@ C_TRAN_FILENAME = 'c_transactions'
 class Blockchain:
   
   def __init__(self):
-    self.id = None
+    self.wallet = Wallet()
+    self.id = self.wallet.public_id
     self.chain = self.load_chain()
     self.current_transactions = self.load_current_transactions()
     
@@ -41,24 +42,35 @@ class Blockchain:
       slb.save_file(C_TRAN_FILENAME, self.current_transactions)
     except IOError:
       print('Unable to save blockchain')
+  
+  def initialize_wallet(self,method):
+    if method == 'CREATE':
+      self.wallet.create_keys()
+    elif method == 'LOAD':
+      self.wallet.load_keys()
+    else:
+      raise ValueError('Invalid method to initialize wallet')
+    self.id = self.wallet.public_id
       
-  def add_transaction(self, sender, recipient, amount):
-    new_transaction = Transaction(sender, recipient, amount).dictionary()
-    copy_c_transactions = self.current_transactions
-    copy_c_transactions.append(new_transaction)
-    self.current_transactions = copy_c_transactions
-    self.save_c_transactions()
+  def add_transaction(self, recipient, amount):
+    if self.id:
+      new_transaction = Transaction(sender, recipient, amount).dictionary()
+      copy_c_transactions = self.current_transactions
+      copy_c_transactions.append(new_transaction)
+      self.current_transactions = copy_c_transactions
+      self.save_c_transactions()
   
   def mine(self):
-    current_index = len(self.chain)
-    previous_block = self.chain[-1]
-    previous_hash = hv.hash_ord_dict(previous_block)
-    proof = 1
-    new_block = Block(current_index, previous_hash, self.current_transactions, proof).dictionary()
-    copy_chain = self.chain
-    copy_chain.append(new_block)
-    self.chain = copy_chain
-    self.save_chain()
+    if self.id:
+      current_index = len(self.chain)
+      previous_block = self.chain[-1]
+      previous_hash = hv.hash_ord_dict(previous_block)
+      proof = 1
+      new_block = Block(current_index, previous_hash, self.current_transactions, proof).dictionary()
+      copy_chain = self.chain
+      copy_chain.append(new_block)
+      self.chain = copy_chain
+      self.save_chain()
     
   @property
   def chain(self):
@@ -73,7 +85,7 @@ class Blockchain:
     return deepcopy(self.__current_transactions)
   
   @current_transactions.setter
-  def current_transactions(self, new_c_transactions)
+  def current_transactions(self, new_c_transactions):
     self.__current_transactions = new_c_transactions
       
   
@@ -82,5 +94,6 @@ blockchain = Blockchain()
 blockchain.add_transaction('marcelo','me',5)
 blockchain.mine()
 
+print(blockchain.id)
 print(blockchain.current_transactions)
 print(blockchain.chain)

@@ -142,3 +142,7 @@ cython_debug/
 private_key.der
 
 public_key.der
+
+chain.bin
+
+c_transactions.bin
