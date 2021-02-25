@@ -1,0 +1,8 @@
+# from block import Block
+
+# block = Block(1,'ldkaldfhla',[{'k':'j','k':1}],5).dictionary()
+
+# def a(*args):
+#   print(args)
+  
+# a(*[block[key] for key in block])
