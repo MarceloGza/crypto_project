@@ -2,7 +2,6 @@ import utility.save_load_bin as slb
 import utility.hash_value as hv 
 
 from copy import deepcopy
-from copy import copy
 
 from block import Block
 from wallet import Wallet
