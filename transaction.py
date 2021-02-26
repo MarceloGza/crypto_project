@@ -1,6 +1,5 @@
 from datetime import datetime
 from collections import OrderedDict
-import json
 
 class Transaction:
   
@@ -8,12 +7,15 @@ class Transaction:
     self.sender = sender
     self.recipient = recipient
     self.amount = amount
+    self.signature = None
     
   def __repr__(self):
     return self.dictionary()
     
   def dictionary(self):
-    return OrderedDict([('sender', self.sender),('recipient', self.recipient), ('amount', self.amount), ('time', self.time)])
+    if not self.signature:
+      return OrderedDict([('sender', self.sender),('recipient', self.recipient), ('amount', self.amount), ('time', self.time)])
+    return OrderedDict([('sender', self.sender),('recipient', self.recipient), ('amount', self.amount), ('time', self.time), ('signature', self.signature)])
   
   @property
   def time(self):

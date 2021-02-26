@@ -3,6 +3,8 @@ from Crypto import Random
 from Crypto.Signature import PKCS1_v1_5 
 import binascii
 
+import utility.hash_value as hv
+
 PRIVATE_FILENAME = 'private_key.der'
 PUBLIC_FILENAME = 'public_key.der'
 class Wallet:
@@ -39,8 +41,11 @@ class Wallet:
     except (IOError,IndexError):
       print('Failed to load keys')
   
-  def sign_transaction(self):
-    print('signing')
+  def sign_transaction(self, ord_dict):
+    signer = PKCS1_v1_5.new(RSA.import_key(self.private_key))
+    s_hash = hv.undigested_hash_ord_dict(ord_dict)
+    signature = signer.sign(s_hash)
+    return binascii.hexlify(signature).decode('ascii')
     
   def verify_signature(self):
     print('verifying')

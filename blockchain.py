@@ -6,6 +6,8 @@ from copy import deepcopy
 from block import Block
 from wallet import Wallet
 from transaction import Transaction
+from utility.validation import Validation
+import json #completely_unimportant
 
 GENESIS_BLOCK = Block(0,'', [], 0).dictionary()
 CHAIN_FILENAME = 'chain'
@@ -54,9 +56,12 @@ class Blockchain:
       
   def add_transaction(self, recipient, amount):
     if self.id:
-      new_transaction = Transaction(sender, recipient, amount).dictionary()
       copy_c_transactions = self.current_transactions
-      copy_c_transactions.append(new_transaction)
+      
+      new_transaction = Transaction(self.id, recipient, amount)
+      new_transaction.signature = self.wallet.sign_transaction(new_transaction.dictionary())
+      
+      copy_c_transactions.append(new_transaction.dictionary())
       self.current_transactions = copy_c_transactions
       self.save_c_transactions()
   
@@ -91,9 +96,11 @@ class Blockchain:
   
 blockchain = Blockchain()
 
-blockchain.add_transaction('marcelo','me',5)
+blockchain.initialize_wallet('CREATE')
+
+blockchain.add_transaction('marcelo',5)
 blockchain.mine()
 
-print(blockchain.id)
-print(blockchain.current_transactions)
-print(blockchain.chain)
+print(json.dumps(blockchain.id))
+print(json.dumps(blockchain.current_transactions))
+print(json.dumps(blockchain.chain))
