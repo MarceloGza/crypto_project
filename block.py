@@ -14,11 +14,5 @@ class Block:
   def dictionary(self):
     return OrderedDict([('index', self.index), ('prev_hash', self.prev_hash), ('transactions', self.transactions), ('proof', self.proof)])
   
-# block = Block(0,'qerqrqerqr',[{'key':'value','key2':5},{'key':'value','key2':5}],356)
-
-# a = block.hashed()
-
-# print(a)
-
 
   

@@ -6,7 +6,6 @@ def hash_value(*data):
   
   for value in data:
     hash_string = hash_string + str(value)
-  # print(hash_string)
   return hl.sha256(hash_string.encode()).hexdigest()
  
 def hash_ord_dict(ordered_dict):

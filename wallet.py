@@ -41,14 +41,12 @@ class Wallet:
     except (IOError,IndexError):
       print('Failed to load keys')
   
-  def sign_transaction(self, ord_dict):
+  def sign_transaction(self, transaction):
     signer = PKCS1_v1_5.new(RSA.import_key(self.private_key))
-    s_hash = hv.undigested_hash_ord_dict(ord_dict)
+    s_hash = hv.undigested_hash_ord_dict(transaction)
     signature = signer.sign(s_hash)
     return binascii.hexlify(signature).decode('ascii')
     
-  def verify_signature(self):
-    print('verifying')
           
   @property
   def public_id(self):
