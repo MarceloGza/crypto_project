@@ -61,8 +61,3 @@ class Wallet:
       return binascii.hexlify(self.private_key).decode('ascii')
     return None
     
-# wallet = Wallet()
-
-# print(wallet.public_id)
-# wallet.create_keys()
-# print(wallet.public_id)

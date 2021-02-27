@@ -9,7 +9,7 @@ from transaction import Transaction
 from utility.validation import Validation
 import json #completely_unimportant
 
-GENESIS_BLOCK = Block(0,'', [], 0).dictionary()
+GENESIS_BLOCK = Block(0,'', [])
 CHAIN_FILENAME = 'chain'
 C_TRAN_FILENAME = 'c_transactions'
 
@@ -25,7 +25,7 @@ class Blockchain:
     try:
       return slb.load_file(CHAIN_FILENAME)
     except (IOError,IndexError):
-      return [GENESIS_BLOCK]
+      return [GENESIS_BLOCK.dictionary()]
       
   def load_current_transactions(self):
     try:
@@ -70,10 +70,10 @@ class Blockchain:
       current_index = len(self.chain)
       previous_block = self.chain[-1]
       previous_hash = hv.hash_ord_dict(previous_block)
-      proof = 1
-      new_block = Block(current_index, previous_hash, self.current_transactions, proof).dictionary()
+      new_block = Block(current_index, previous_hash, self.current_transactions)
+      new_block.generate_proof_of_work()
       copy_chain = self.chain
-      copy_chain.append(new_block)
+      copy_chain.append(new_block.dictionary())
       self.chain = copy_chain
       self.save_chain()
     
@@ -93,16 +93,3 @@ class Blockchain:
   def current_transactions(self, new_c_transactions):
     self.__current_transactions = new_c_transactions
       
-  
-blockchain = Blockchain()
-
-blockchain.initialize_wallet('CREATE')
-
-blockchain.add_transaction('marcelo',5)
-blockchain.mine()
-
-# print(json.dumps(blockchain.id))
-# print(json.dumps(blockchain.current_transactions))
-# print(json.dumps(blockchain.chain))
-print(Validation.validate_chain(blockchain.chain))
-print([Validation.validate_signature(transaction) for transaction in blockchain.current_transactions])
