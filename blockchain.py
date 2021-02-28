@@ -9,7 +9,7 @@ from transaction import Transaction
 from utility.validation import Validation
 
 
-GENESIS_BLOCK = Block(0,'', [])
+GENESIS_BLOCK = Block(0,'', [], 0)
 CHAIN_FILENAME = 'chain'
 C_TRAN_FILENAME = 'c_transactions'
 
@@ -77,8 +77,7 @@ class Blockchain:
                         for block in self.chain for transaction in block['transactions']]
       
       c_transactions_movements = [ (-transaction['amount'] if transaction['sender']== public_id 
-                                    else transaction['amount'] if transaction['recipient']== public_id else 0) 
-                                  for transaction in self.current_transactions]
+                                    else 0) for transaction in self.current_transactions]
       return sum(chain_movements) + sum(c_transactions_movements)
     
     return 0   
@@ -99,11 +98,28 @@ class Blockchain:
       current_index = len(self.chain)
       previous_block = self.chain[-1]
       previous_hash = hv.hash_ord_dict(previous_block)
-      new_block = Block(current_index, previous_hash, self.current_transactions)
-      new_block.generate_proof_of_work()
+      transactions_to_add = self.current_transactions
+      
+      if not Validation.validate_c_transactions(transactions_to_add):
+        return
+      
+      proof = Validation.generate_proof_of_work(previous_hash, transactions_to_add)
+      
+      mining_reward = Transaction('MINING', self.id, 10)
+      transactions_to_add.append(mining_reward.dictionary())
+      
+      new_block = Block(current_index, previous_hash, transactions_to_add, proof)
+      
       copy_chain = self.chain
       copy_chain.append(new_block.dictionary())
+      
+      if not Validation.validate_chain(copy_chain):
+        return
+      
+      self.current_transactions = []
       self.chain = copy_chain
+      
+      self.save_c_transactions()
       self.save_chain()
     
   @property
@@ -122,17 +138,3 @@ class Blockchain:
   def current_transactions(self, new_c_transactions):
     self.__current_transactions = new_c_transactions
       
-      
-# blockchain = Blockchain()
-
-# blockchain.initialize_wallet('LOAD')
-
-# blockchain.add_transaction('asdasd', 10)
-# blockchain.add_transaction('asd', 5)
-# blockchain.add_transaction('asdasd', 10)
-
-# blockchain.mine()
-
-# print(blockchain.get_balance(blockchain.id))
-# print(blockchain.get_balance('asdasd'))
-# print(blockchain.get_balance('asd'))

@@ -6,12 +6,15 @@ import utility.hash_value as hv
 
 class Validation():
   
-  @staticmethod
-  def validate_chain(chain):
+  @classmethod
+  def validate_c_transactions(self, c_transactions):
+    return all([self.validate_signature(transaction) for transaction in c_transactions])
+  
+  @classmethod
+  def validate_chain(self, chain):
     for (index,block) in enumerate(chain):
       if index != 0:
-        previous_hash = hv.hash_ord_dict(chain[index-1])
-        if block['prev_hash'] != previous_hash: 
+        if (not self.validate_proof_of_work(block)) or (block['prev_hash'] != hv.hash_ord_dict(chain[index-1])): 
           return False   
     return True
   
@@ -24,12 +27,21 @@ class Validation():
     v_hash = hv.undigested_hash_ord_dict(copy_transaction)
     return verifier.verify(v_hash,signature)
     
-  @staticmethod
-  def validate_proof_of_work(block):
+  @classmethod
+  def validate_proof_of_work(self, block):
     copy_block = deepcopy(block)
-    return hv.hash_value(copy_block['prev_hash'], copy_block['transactions'], copy_block['proof']).startswith('00')
+    return self.meets_proof_condition(copy_block['prev_hash'], copy_block['transactions'][:-1], copy_block['proof'])
   
   @classmethod
-  def validate_c_transactions(self, c_transactions):
-    return all([self.validate_signature(transaction) for transaction in c_transactions])
+  def generate_proof_of_work(self, previous_hash, transactions_to_add):
+    new_proof = 0
+    while not self.meets_proof_condition(previous_hash,transactions_to_add,new_proof):
+        new_proof += 1
+    return new_proof
+  
+  @staticmethod  
+  def meets_proof_condition(prev_hash, transaction, proof):
+    amount_of_zeros = 2
+    condition = amount_of_zeros*'0'
+    return hv.hash_value(prev_hash, transaction, proof).startswith(condition)
     

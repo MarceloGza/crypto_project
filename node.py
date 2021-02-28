@@ -1,18 +1,19 @@
-# from block import Block
+from blockchain import Blockchain
 
-# block = Block(1,'ldkaldfhla',[{'k':'j','k':1}],5).dictionary()
+blockchain = Blockchain()
 
-# def a(*args):
-#   print(args)
-  
-# a(*[block[key] for key in block])
-# a(*[value for key,value in block.items()])
+blockchain.initialize_wallet('LOAD')
 
+blockchain.add_transaction('asd', 5)
+blockchain.add_transaction('asdasd', 10)
 
-try:
-  print('test')
-  raise IOError
-  print('test2')
-except:
-  print('test3')
-  
+blockchain.mine()
+
+blockchain.add_transaction('asdasd', 10)
+
+print(blockchain.get_balance(blockchain.id))
+print(blockchain.get_balance('asdasd'))
+print(blockchain.get_balance('asd'))
+
+print(blockchain.chain)
+print(blockchain.current_transactions)
