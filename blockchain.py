@@ -7,7 +7,7 @@ from block import Block
 from wallet import Wallet
 from transaction import Transaction
 from utility.validation import Validation
-import json #completely_unimportant
+
 
 GENESIS_BLOCK = Block(0,'', [])
 CHAIN_FILENAME = 'chain'
@@ -17,31 +17,46 @@ class Blockchain:
   
   def __init__(self):
     self.wallet = Wallet()
-    self.id = self.wallet.public_id
+    self.id = None
+    self.balance = 0
     self.chain = self.load_chain()
     self.current_transactions = self.load_current_transactions()
     
   def load_chain(self):
     try:
-      return slb.load_file(CHAIN_FILENAME)
+      loaded_chain = slb.load_file(CHAIN_FILENAME)
+      if Validation.validate_chain(loaded_chain):
+        return loaded_chain
+      print('Invalid chain detected')
+      raise IOError
     except (IOError,IndexError):
       return [GENESIS_BLOCK.dictionary()]
       
   def load_current_transactions(self):
     try:
-      return slb.load_file(C_TRAN_FILENAME)
+      loaded_c_transactions = slb.load_file(C_TRAN_FILENAME)
+      if Validation.validate_c_transactions(loaded_c_transactions):
+        return loaded_c_transactions
+      print('Invalid current transactions detected')
+      raise IOError
     except (IOError, IndexError):
       return []
   
   def save_chain(self):
     try:
-      slb.save_file(CHAIN_FILENAME, self.chain)
+      if Validation.validate_chain(self.chain):
+        slb.save_file(CHAIN_FILENAME, self.chain)
+      else:
+        print('Unable to save invalid blockchain')
     except IOError:
       print('Unable to save blockchain')
   
   def save_c_transactions(self):
     try:
-      slb.save_file(C_TRAN_FILENAME, self.current_transactions)
+      if Validation.validate_c_transactions(self.current_transactions):
+        slb.save_file(C_TRAN_FILENAME, self.current_transactions)
+      else:
+        print('Unable to save invalid current transactions')
     except IOError:
       print('Unable to save blockchain')
   
@@ -51,9 +66,23 @@ class Blockchain:
     elif method == 'LOAD':
       self.wallet.load_keys()
     else:
-      raise ValueError('Invalid method to initialize wallet')
+      raise ValueError('Invalid method to initialize wallet') 
     self.id = self.wallet.public_id
+    
+  
+  def get_balance(self, public_id):
+    if Validation.validate_chain(self.chain) and Validation.validate_c_transactions(self.current_transactions):
+      chain_movements = [ (-transaction['amount'] if transaction['sender']== public_id 
+                           else transaction['amount'] if transaction['recipient']== public_id else 0) 
+                        for block in self.chain for transaction in block['transactions']]
       
+      c_transactions_movements = [ (-transaction['amount'] if transaction['sender']== public_id 
+                                    else transaction['amount'] if transaction['recipient']== public_id else 0) 
+                                  for transaction in self.current_transactions]
+      return sum(chain_movements) + sum(c_transactions_movements)
+    
+    return 0   
+  
   def add_transaction(self, recipient, amount):
     if self.id:
       copy_c_transactions = self.current_transactions
@@ -93,3 +122,17 @@ class Blockchain:
   def current_transactions(self, new_c_transactions):
     self.__current_transactions = new_c_transactions
       
+      
+# blockchain = Blockchain()
+
+# blockchain.initialize_wallet('LOAD')
+
+# blockchain.add_transaction('asdasd', 10)
+# blockchain.add_transaction('asd', 5)
+# blockchain.add_transaction('asdasd', 10)
+
+# blockchain.mine()
+
+# print(blockchain.get_balance(blockchain.id))
+# print(blockchain.get_balance('asdasd'))
+# print(blockchain.get_balance('asd'))

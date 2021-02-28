@@ -28,4 +28,8 @@ class Validation():
   def validate_proof_of_work(block):
     copy_block = deepcopy(block)
     return hv.hash_value(copy_block['prev_hash'], copy_block['transactions'], copy_block['proof']).startswith('00')
+  
+  @classmethod
+  def validate_c_transactions(self, c_transactions):
+    return all([self.validate_signature(transaction) for transaction in c_transactions])
     
