@@ -83,44 +83,57 @@ class Blockchain:
     return 0   
   
   def add_transaction(self, recipient, amount):
-    if self.id:
-      copy_c_transactions = self.current_transactions
+    
+    if not self.id:
+      print('Public & Private Keys required to make transactions')
+      return
+    
+    balance = self.get_balance(self.id)
+    
+    if balance < amount:
+      print('Insufficient funds for transaction')
+      return
       
-      new_transaction = Transaction(self.id, recipient, amount)
-      new_transaction.signature = self.wallet.sign_transaction(new_transaction.dictionary())
-      
-      copy_c_transactions.append(new_transaction.dictionary())
-      self.current_transactions = copy_c_transactions
-      self.save_c_transactions()
+    copy_c_transactions = self.current_transactions
+    
+    new_transaction = Transaction(self.id, recipient, amount)
+    new_transaction.signature = self.wallet.sign_transaction(new_transaction.dictionary())
+    
+    copy_c_transactions.append(new_transaction.dictionary())
+    
+    self.current_transactions = copy_c_transactions
+    self.save_c_transactions()
   
   def mine(self):
-    if self.id:
-      current_index = len(self.chain)
-      previous_block = self.chain[-1]
-      previous_hash = hv.hash_ord_dict(previous_block)
-      transactions_to_add = self.current_transactions
+    if not self.id:
+      print('Public Key required to mine')
       
-      if not Validation.validate_c_transactions(transactions_to_add):
-        return
-      
-      proof = Validation.generate_proof_of_work(previous_hash, transactions_to_add)
-      
-      mining_reward = Transaction('MINING', self.id, 10)
-      transactions_to_add.append(mining_reward.dictionary())
-      
-      new_block = Block(current_index, previous_hash, transactions_to_add, proof)
-      
-      copy_chain = self.chain
-      copy_chain.append(new_block.dictionary())
-      
-      if not Validation.validate_chain(copy_chain):
-        return
-      
-      self.current_transactions = []
-      self.chain = copy_chain
-      
-      self.save_c_transactions()
-      self.save_chain()
+    current_index = len(self.chain)
+    previous_block = self.chain[-1]
+    previous_hash = hv.hash_ord_dict(previous_block)
+    transactions_to_add = self.current_transactions
+    
+    if not Validation.validate_c_transactions(transactions_to_add):
+      return
+    
+    proof = Validation.generate_proof_of_work(previous_hash, transactions_to_add)
+    
+    mining_reward = Transaction('MINING', self.id, 10)
+    transactions_to_add.append(mining_reward.dictionary())
+    
+    new_block = Block(current_index, previous_hash, transactions_to_add, proof)
+    
+    copy_chain = self.chain
+    copy_chain.append(new_block.dictionary())
+    
+    if not Validation.validate_chain(copy_chain):
+      return
+    
+    self.current_transactions = []
+    self.chain = copy_chain
+    
+    self.save_c_transactions()
+    self.save_chain()
     
   @property
   def chain(self):
@@ -128,7 +141,8 @@ class Blockchain:
   
   @chain.setter
   def chain(self, new_chain):
-    self.__chain = new_chain
+    if Validation.validate_chain(new_chain):
+      self.__chain = new_chain
     
   @property
   def current_transactions(self):
@@ -136,5 +150,6 @@ class Blockchain:
   
   @current_transactions.setter
   def current_transactions(self, new_c_transactions):
-    self.__current_transactions = new_c_transactions
+    if Validation.validate_c_transactions(new_c_transactions):
+      self.__current_transactions = new_c_transactions
       
