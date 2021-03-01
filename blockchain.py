@@ -61,14 +61,16 @@ class Blockchain:
       print('Unable to save blockchain')
   
   def initialize_wallet(self,method):
-    if method == 'CREATE':
-      self.wallet.create_keys()
-    elif method == 'LOAD':
-      self.wallet.load_keys()
-    else:
-      raise ValueError('Invalid method to initialize wallet') 
-    self.id = self.wallet.public_id
     
+    if method == 'CREATE':
+      result = self.wallet.create_keys()
+    elif method == 'LOAD':
+      result = self.wallet.load_keys()
+    else:
+      print('Invalid method to initialize wallet')
+      result = 'Invalid' 
+    self.id = self.wallet.public_id
+    return result
   
   def get_balance(self, public_id):
     if Validation.validate_chain(self.chain) and Validation.validate_c_transactions(self.current_transactions):

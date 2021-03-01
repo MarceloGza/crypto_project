@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blockchain Project</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/style.css?u={{ last_updated }}" />
+    <script
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
+      defer
+    ></script>
+    <script src="/static/front.js?u={{ last_updated }}" defer></script>
+  </head>
+  <body>
+    <h1 id="title">Blockchain Project</h1>
+    <hr />
+    <div id="tip-div">
+      <p id="tip">Create a Wallet to start sending or mining coins</p>
+    </div>
+    <hr />
+    <div id="wallet-manager">
+      <div id="wallet-control">
+        <button id="create-wallet">Create Wallet</button>
+        <button id="load-wallet">Load Wallet</button>
+        <button id="mine">Mine</button>
+        <button id="public-key">Public Key</button>
+        <button id="private-key">Private Key</button>
+      </div>
+      <div id="wallet-id-div">
+        <p id="wallet-id">Waiting for Wallet ...</p>
+      </div>
+      <div id="funds-div">
+        <h2>Funds:</h2>
+        <h2 id="funds">0.00</h2>
+      </div>
+    </div>
+    <hr />
+    <div id="tab-manager">
+      <button id="add-btn" class="active">Add Transaction</button>
+      <button id="blockchain-btn">Show Blockchain</button>
+      <button id="transactions-btn">Show Current Transactions</button>
+      <button id="hack">Hack/Modify Blockchain</button>
+    </div>
+    <hr />
+    <div id="content">
+      <div id="transaction-card">
+        <p>RECIPIENT: </p>
+        <textarea name="recipient" id="recipient" cols="30" rows="10"></textarea>
+        <p>AMOUNT:</p>
+        <input type="number" name="amount" step="0.01" />
+        <button>SUBMIT TRANSACTION</button>
+      </div>
+      <div id="show-blockchain" class="hidden"></div>
+      <div id="show-transactions" class="hidden"></div>
+      <div id="hack" class="hidden"></div>
+    </div>
+  </body>
+</html>

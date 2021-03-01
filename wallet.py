@@ -27,8 +27,11 @@ class Wallet:
         file.write(public_key)
         self.public_key = public_key
       
+      return 'Success'
+      
     except IOError:
       print('Failed to create keys')
+      return 'Failure'
   
   def load_keys(self):
     try:
@@ -38,8 +41,11 @@ class Wallet:
       with open(PUBLIC_FILENAME, 'rb') as file:
         self.public_key = file.read()
         
+      return 'Success'
+        
     except (IOError,IndexError):
       print('Failed to load keys')
+      return 'Failure'
   
   def sign_transaction(self, transaction):
     signer = PKCS1_v1_5.new(RSA.import_key(self.private_key))
