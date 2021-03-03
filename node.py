@@ -1,6 +1,7 @@
-from flask import Flask, request, send_from_directory, render_template
+from flask import Flask, request, send_from_directory, render_template, jsonify
 from flask_cors import CORS
 import os
+import json
 
 from blockchain import Blockchain
 
@@ -71,6 +72,13 @@ def load_keys():
 def add_transaction():
   pass
 
+@app.route('/chain', methods=['GET'])
+def get_blockchain():
+  response = {
+    'message': 'Blockchain loaded successfully', 
+    'blockchain': blockchain.chain
+  }
+  return response
 
 if __name__ == '__main__':
   app.run('127.0.0.1', 5000)

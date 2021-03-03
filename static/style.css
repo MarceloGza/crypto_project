@@ -1,8 +1,19 @@
+html{
+  -ms-overflow-style: none; 
+  scrollbar-width: none; 
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
   padding: 2% 10%;
 }
+
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
 
 button {
   font-family: 'Montserrat', sans-serif;
@@ -95,9 +106,6 @@ hr {
   width: 100%;
 }
 
-.hidden {
-  display: none;
-}
 
 #transaction-card{
   display: flex;
@@ -106,4 +114,23 @@ hr {
 
 #transaction-card > input{
   margin-bottom: 10px;
+}
+
+ .long{
+  width: 100%;
+}
+
+#show-blockchain  ul {
+  list-style: none;
+  padding-left: 0;
+  max-width: 100%;
+  word-wrap: break-word;
+}
+
+#show-blockchain hr{
+  background-color: maroon;
+  border-color: maroon;
+  color: maroon;
+  border: solid;
+  width: 100%;
 }

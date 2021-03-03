@@ -11,10 +11,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/static/style.css?u={{ last_updated }}" />
-    <script
-      src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"
-      defer
-    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js" defer></script>
     <script src="/static/front.js?u={{ last_updated }}" defer></script>
   </head>
   <body>
@@ -45,20 +42,25 @@
       <button id="add-btn" class="active">Add Transaction</button>
       <button id="blockchain-btn">Show Blockchain</button>
       <button id="transactions-btn">Show Current Transactions</button>
-      <button id="hack">Hack/Modify Blockchain</button>
+      <!-- <button id="hack">Hack/Modify Blockchain</button> -->
     </div>
     <hr />
     <div id="content">
       <div id="transaction-card">
-        <p>RECIPIENT: </p>
-        <textarea name="recipient" id="recipient" cols="30" rows="10"></textarea>
+        <p>RECIPIENT:</p>
+        <textarea
+          name="recipient"
+          id="recipient"
+          cols="30"
+          rows="10"
+        ></textarea>
         <p>AMOUNT:</p>
         <input type="number" name="amount" step="0.01" />
         <button>SUBMIT TRANSACTION</button>
       </div>
-      <div id="show-blockchain" class="hidden"></div>
-      <div id="show-transactions" class="hidden"></div>
-      <div id="hack" class="hidden"></div>
+      <div id="show-blockchain"></div>
+      <div id="show-transactions"></div>
+      <!-- <div id="hack" class="hidden"></div> -->
     </div>
   </body>
 </html>
