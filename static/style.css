@@ -120,14 +120,16 @@ hr {
   width: 100%;
 }
 
-#show-blockchain  ul {
+#show-blockchain  ul,
+#show-transactions  ul {
   list-style: none;
   padding-left: 0;
   max-width: 100%;
   word-wrap: break-word;
 }
 
-#show-blockchain hr{
+#show-blockchain hr,
+#show-transactions hr{
   background-color: maroon;
   border-color: maroon;
   color: maroon;

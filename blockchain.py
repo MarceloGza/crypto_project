@@ -44,21 +44,23 @@ class Blockchain:
   
   def save_chain(self):
     try:
-      if Validation.validate_chain(self.chain):
-        slb.save_file(CHAIN_FILENAME, self.chain)
-      else:
-        print('Unable to save invalid blockchain')
+      # if Validation.validate_chain(self.chain):
+      slb.save_file(CHAIN_FILENAME, self.chain)
+      # else:
+      #   print('Unable to save invalid blockchain')
+      return True
     except IOError:
-      print('Unable to save blockchain')
+      return False
   
   def save_c_transactions(self):
     try:
-      if Validation.validate_c_transactions(self.current_transactions):
-        slb.save_file(C_TRAN_FILENAME, self.current_transactions)
-      else:
-        print('Unable to save invalid current transactions')
+      # if Validation.validate_c_transactions(self.current_transactions):
+      slb.save_file(C_TRAN_FILENAME, self.current_transactions)
+      # else:
+      #   print('Unable to save invalid current transactions')
+      return True
     except IOError:
-      print('Unable to save blockchain')
+      return False
   
   def initialize_wallet(self,method):
     
@@ -87,14 +89,12 @@ class Blockchain:
   def add_transaction(self, recipient, amount):
     
     if not self.id:
-      print('Public & Private Keys required to make transactions')
-      return
+      return 'NO_ID'
     
     balance = self.get_balance(self.id)
     
     if balance < amount:
-      print('Insufficient funds for transaction')
-      return
+      return 'NO_FUNDS'
       
     copy_c_transactions = self.current_transactions
     
@@ -104,11 +104,14 @@ class Blockchain:
     copy_c_transactions.append(new_transaction.dictionary())
     
     self.current_transactions = copy_c_transactions
-    self.save_c_transactions()
+    if not self.save_c_transactions():
+      return 'TRANS_ERROR'
+    
+    return 'SUCCESS'
   
   def mine(self):
     if not self.id:
-      print('Public Key required to mine')
+      return 'NO_ID'
       
     current_index = len(self.chain)
     previous_block = self.chain[-1]
@@ -116,7 +119,7 @@ class Blockchain:
     transactions_to_add = self.current_transactions
     
     if not Validation.validate_c_transactions(transactions_to_add):
-      return
+      return 'INVALID_TRANSACTIONS'
     
     proof = Validation.generate_proof_of_work(previous_hash, transactions_to_add)
     
@@ -129,13 +132,17 @@ class Blockchain:
     copy_chain.append(new_block.dictionary())
     
     if not Validation.validate_chain(copy_chain):
-      return
+      return 'INVALID_CHAIN'
     
     self.current_transactions = []
     self.chain = copy_chain
     
-    self.save_c_transactions()
-    self.save_chain()
+    if not self.save_c_transactions():
+      return 'TRANS_ERROR'
+    if not self.save_chain():
+      return 'CHAIN_ERROR'
+    
+    return 'SUCCESS'
     
   @property
   def chain(self):

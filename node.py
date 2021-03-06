@@ -18,6 +18,8 @@ def dir_last_updated(folder):
 
 @app.route('/', methods=['GET'])
 def get_ui():
+  global blockchain
+  blockchain = Blockchain()
   return render_template('node.html', last_updated=dir_last_updated('./static'))
 
 @app.route('/wallet', methods=['POST'])
@@ -70,7 +72,30 @@ def load_keys():
 
 @app.route('/add-transaction', methods=['POST'])
 def add_transaction():
-  pass
+  result = blockchain.add_transaction('test_id', 0.5)
+  if result == 'NO_ID':
+    response = {
+      'message': 'Public & Private Keys required to make transactions'
+    } 
+  elif result == 'NO_FUNDS':
+    response = {
+      'message': 'Not enough funds to complete transaction'
+    } 
+  elif result == 'TRANS_ERROR':
+    response = {
+      'message': 'There was an error saving the new current transactions'
+    } 
+  elif result == 'SUCCESS':
+    response = {
+      'message': 'Transaction added to Current Transactions, funds deducted accordingly',
+      'balance': blockchain.get_balance(blockchain.id)
+    }
+  else:
+    response = {
+      'message':'Unexpected error mining blockchain'
+    } 
+  return response
+  
 
 @app.route('/chain', methods=['GET'])
 def get_blockchain():
@@ -79,6 +104,49 @@ def get_blockchain():
     'blockchain': blockchain.chain
   }
   return response
+
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+  response = {
+    'message': 'Current transactions loaded successfully', 
+    'transactions': blockchain.current_transactions
+  }
+  return response
+
+@app.route('/mine', methods=['POST'])
+def mine():
+  result = blockchain.mine()
+  if result == 'NO_ID':
+    response = {
+      'message': 'Public Key is required to mine'
+    } 
+  elif result == 'INVALID_TRANSACTIONS':
+    response = {
+      'message': 'INVALID TRANSACTION DETECTED. MINING STOPPED'
+    } 
+  elif result == 'INVALID_CHAIN':
+    response = {
+      'message': 'INVALID CHAIN DETECTED. MINING STOPPED'
+    } 
+  elif result == 'TRANS_ERROR':
+    response = {
+      'message': 'There was an error saving the new current transactions'
+    } 
+  elif result == 'CHAIN_ERROR':
+    response = {
+      'message': 'There was an error saving the new blockchain'
+    } 
+  elif result == 'SUCCESS':
+    response = {
+      'message': 'New blockchain mined, reward added to your balance',
+      'balance': blockchain.get_balance(blockchain.id)
+    }
+  else:
+    response = {
+      'message':'Unexpected error mining blockchain'
+    } 
+  return response
+
 
 if __name__ == '__main__':
   app.run('127.0.0.1', 5000)
